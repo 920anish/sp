@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:country_picker/country_picker.dart';
+import 'package:sanatanpariwar/pdf_utils.dart';
+
+
 
 class MembershipForm extends StatefulWidget {
   @override
@@ -22,6 +25,8 @@ class _MembershipFormState extends State<MembershipForm> {
   String? _selectedGender;
   String? _selectedMaritalStatus;
   bool _agreedToRules = false;
+  final membershipDate =  DateTime.now().toString();
+
 
 
   @override
@@ -37,7 +42,6 @@ class _MembershipFormState extends State<MembershipForm> {
 
     super.dispose();
   }
-
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
       // Form is valid, proceed with submitting the data
@@ -49,7 +53,6 @@ class _MembershipFormState extends State<MembershipForm> {
       String phone = _phoneController.text;
       String address = _addressController.text;
       String referredBy = _referredByController.text;
-
 
       // Store the data in Firebase Firestore
       FirebaseFirestore.instance.collection('members').add({
@@ -65,40 +68,50 @@ class _MembershipFormState extends State<MembershipForm> {
         'referredBy': referredBy,
         'membershipDate': DateTime.now(),
         'maritalStatus': _selectedMaritalStatus,
-
-
-
       }).then((docRef) {
-
         // Show a success message
         showDialog(
           context: context,
           builder: (ctx) => AlertDialog(
             title: Text('Membership Submitted'),
-            content: Text('Thank you for submitting your membership!'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  _resetForm(); // Reset the form
-                },
-                child: Text('OK'),
-                style: TextButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  backgroundColor: Colors.orange,
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('Thank you for submitting your membership!'),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TextButton(
+                      onPressed: _agreedToRules
+                          ? () {
+                        generatePdf(name, membershipDate);
+                        Navigator.of(context).pop();
+                        _resetForm();
+                      }
+                          : null,
+                      child: Text('Download'),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        _resetForm(); // Reset the form
+                      },
+                      child: Text('OK'),
+                      style: TextButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor: Colors.orange,
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-
         );
-
       });
-
-
     }
-
   }
+
 
 
 

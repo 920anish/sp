@@ -41,6 +41,10 @@ dependencies:
   flutter_local_notifications: ^14.1.1
   flutter_stripe: ^9.2.1
   pay: ^1.1.1
+  pdf: ^3.10.4
+  permission_handler: ^10.2.0
+  open_file: ^3.3.1
+
 
 
 
