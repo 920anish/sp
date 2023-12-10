@@ -20,7 +20,7 @@ dependencies:
 
   # UI
   flutter_bloc: ^8.0.1
-  http: ^0.13.0
+  http: ^1.1.2
   shared_preferences: ^2.0.10
 
   # Icons
@@ -38,11 +38,11 @@ dependencies:
   firebase_analytics: ^10.4.1
   country_picker: ^2.0.20
   intl: ^0.18.0
-  flutter_local_notifications: ^14.1.1
+  flutter_local_notifications: ^16.2.0
   flutter_stripe: ^9.2.1
   pay: ^1.1.1
   pdf: ^3.10.4
-  permission_handler: ^10.2.0
+  permission_handler: ^11.1.0
   open_file: ^3.3.1
 
 

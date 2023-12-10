@@ -60,6 +60,7 @@ void generatePdf(String name, String membershipDate) async {
                 ),
               ),
               // Membership date positioned in the bottom left
+              //yet to fix positioning
               pw.Positioned(
                 left: 50,
                 bottom: 50,
