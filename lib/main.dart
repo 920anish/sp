@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:sanatanpariwar/screens/splash_screen.dart';
+import 'package:sanatanpariwar/screens/home_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   print("Handling a background message: ${message.messageId}");
@@ -54,7 +53,7 @@ class SanatanPariwarApp extends StatelessWidget {
         ),
         fontFamily: 'Roboto',
       ),
-      home: SplashScreen(),
+      home: HomeScreen(),
       debugShowCheckedModeBanner: false,
     );
   }

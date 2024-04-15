@@ -98,7 +98,7 @@ class _MembershipFormState extends State<MembershipForm> {
                       },
                       child: Text('OK'),
                       style: TextButton.styleFrom(
-                        foregroundColor: Colors.white,
+                        foregroundColor: Colors.orange[200],
                         backgroundColor: Colors.orange,
                       ),
                     ),
