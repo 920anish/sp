@@ -6,6 +6,7 @@ class PaymentScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.orange[100],
       appBar: AppBar(
         title: Text(
           'Sanatan Daan',
@@ -15,7 +16,7 @@ class PaymentScreen extends StatelessWidget {
             color: Colors.black,
           ),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.orange[100],
         elevation: 0,
       ),
       body: Center(

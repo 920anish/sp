@@ -19,11 +19,11 @@ class GalleryScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Gallery' , style: TextStyle(fontSize: 24.0 ,  fontWeight: FontWeight.bold)),
+        title: Text('Gallery', style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold)),
         backgroundColor: Colors.transparent,
-
         elevation: 0,
       ),
+      backgroundColor: Colors.orange[100], // Set the background color here
       body: GridView.builder(
         padding: EdgeInsets.all(8.0),
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(

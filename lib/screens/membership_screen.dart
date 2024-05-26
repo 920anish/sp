@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:country_picker/country_picker.dart';
-import 'package:sanatanpariwar/pdf_utils.dart';
-
-
 
 class MembershipForm extends StatefulWidget {
   @override
@@ -25,9 +22,7 @@ class _MembershipFormState extends State<MembershipForm> {
   String? _selectedGender;
   String? _selectedMaritalStatus;
   bool _agreedToRules = false;
-  final membershipDate =  DateTime.now().toString();
-
-
+  final membershipDate = DateTime.now().toString();
 
   @override
   void dispose() {
@@ -42,6 +37,7 @@ class _MembershipFormState extends State<MembershipForm> {
 
     super.dispose();
   }
+
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
       // Form is valid, proceed with submitting the data
@@ -84,12 +80,16 @@ class _MembershipFormState extends State<MembershipForm> {
                     TextButton(
                       onPressed: _agreedToRules
                           ? () {
-                        generatePdf(name, membershipDate);
+                        // Implement download functionality
                         Navigator.of(context).pop();
                         _resetForm();
                       }
                           : null,
                       child: Text('Download'),
+                      style: TextButton.styleFrom(
+                        foregroundColor: Colors.orange[400],
+                        backgroundColor: Colors.white,
+                      ),
                     ),
                     TextButton(
                       onPressed: () {
@@ -98,8 +98,8 @@ class _MembershipFormState extends State<MembershipForm> {
                       },
                       child: Text('OK'),
                       style: TextButton.styleFrom(
-                        foregroundColor: Colors.orange[200],
-                        backgroundColor: Colors.orange,
+                        foregroundColor: Colors.orange[400],
+                        backgroundColor: Colors.white,
                       ),
                     ),
                   ],
@@ -111,10 +111,6 @@ class _MembershipFormState extends State<MembershipForm> {
       });
     }
   }
-
-
-
-
 
   void _resetForm() {
     _nameController.clear();
@@ -165,33 +161,36 @@ class _MembershipFormState extends State<MembershipForm> {
       lastDate: DateTime.now(),
     );
 
-    if (pickedDate != null) {
-      String formattedDate = DateFormat('yyyy-MM-dd').format(pickedDate);
-      _dobController.text = formattedDate;
+    String formattedDate = DateFormat('yyyy-MM-dd').format(pickedDate!);
+    _dobController.text = formattedDate;
     }
-  }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        resizeToAvoidBottomInset: false,
+        appBar: AppBar(
+          title: Text('Membership Form',
+              style: TextStyle(
+                fontSize: 24.0,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+
+              ),
+
+          ),
+          backgroundColor: Colors.orange[100],
+          toolbarHeight: 60.0,
+        ),
         body: SingleChildScrollView(
           child: Container(
             padding: EdgeInsets.all(16.0),
-            color: Colors.white,
+            color: Colors.orange[100],
             child: Form(
               key: _formKey,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(
-                    'Become a Member',
-                    style: TextStyle(
-                      fontSize: 24.0,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
                   SizedBox(height: 16.0),
                   TextFormField(
                     controller: _nameController,
@@ -351,7 +350,6 @@ class _MembershipFormState extends State<MembershipForm> {
                       return null;
                     },
                   ),
-
                   SizedBox(height: 16.0),
                   TextFormField(
                     controller: _phoneController,
@@ -432,7 +430,6 @@ class _MembershipFormState extends State<MembershipForm> {
                       text: _selectedCountry?.name ?? '',
                     ),
                   ),
-
                   SizedBox(height: 16.0),
                   Text(
                     'Membership Rules:',
@@ -477,31 +474,32 @@ class _MembershipFormState extends State<MembershipForm> {
                     ),
                   ),
 
-                  SizedBox(height: 16.0),
+                 
                   ElevatedButton(
-                    onPressed: _agreedToRules ? _submitForm : null,
-                    child: Text('Submit'),
-                  ),
+                      onPressed: _agreedToRules ? _submitForm : null,
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor: Colors.orange[200],
+                      ),
+                      child: Text('Submit'),
+                    ),
 
-
-                ]),
+                ],
+              ),
             ),
-
           ),
-
-
         ),
       ),
     );
   }
-}
-Widget _buildRuleTile(IconData icon, String rule) {
-  return ListTile(
-    leading: Icon(icon),
-    title: Text(
-      rule,
-      style: TextStyle(fontSize: 16.0),
-    ),
-  );
-}
 
+  Widget _buildRuleTile(IconData icon, String rule) {
+    return ListTile(
+      leading: Icon(icon),
+      title: Text(
+        rule,
+        style: TextStyle(fontSize: 16.0),
+      ),
+    );
+  }
+}

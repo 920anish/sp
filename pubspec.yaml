@@ -51,6 +51,8 @@ dependencies:
 
 
 
+  path_provider: any
+  firebase_storage: ^11.7.6
 dev_dependencies:
   flutter_test:
     sdk: flutter
