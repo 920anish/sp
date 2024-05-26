@@ -13,6 +13,7 @@ class GalleryScreen extends StatelessWidget {
     'https://picsum.photos/1200/990.jpg',
     'https://picsum.photos/800/600.jpg',
     'https://picsum.photos/700/900.jpg',
+    'https://picsum.photos/700/900.jpg',
   ];
 
   @override
