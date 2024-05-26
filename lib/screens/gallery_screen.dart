@@ -1,20 +1,47 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter/services.dart';
 
-class GalleryScreen extends StatelessWidget {
-  final List<String> imageUrls = [
-    'https://picsum.photos/1080/720.jpg',
-    'https://picsum.photos/800/800.jpg',
-    'https://picsum.photos/1200/800.jpg',
-    'https://picsum.photos/1080/512.jpg',
-    'https://picsum.photos/1200/990.jpg',
-    'https://picsum.photos/800/600.jpg',
-    'https://picsum.photos/700/900.jpg',
-    'https://picsum.photos/700/900.jpg',
-  ];
+class GalleryScreen extends StatefulWidget {
+  @override
+  _GalleryScreenState createState() => _GalleryScreenState();
+}
+
+class _GalleryScreenState extends State<GalleryScreen> {
+  List<String> imageUrls = [];
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchImageUrls();
+  }
+
+  Future<void> fetchImageUrls() async {
+    try {
+      FirebaseStorage storage = FirebaseStorage.instance;
+      ListResult result = await storage.ref('sanatan_pariwar_images').listAll();
+      List<String> urls = await Future.wait(
+        result.items.map((Reference ref) => ref.getDownloadURL()).toList(),
+      );
+      setState(() {
+        imageUrls = urls;
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to load images: $e'),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,8 +51,10 @@ class GalleryScreen extends StatelessWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
-      backgroundColor: Colors.orange[100], // Set the background color here
-      body: GridView.builder(
+      backgroundColor: Colors.orange[100],
+      body: isLoading
+          ? Center(child: SpinKitFadingCircle(color: Colors.blue, size: 48.0))
+          : GridView.builder(
         padding: EdgeInsets.all(8.0),
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
