@@ -18,6 +18,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
   bool _isOffline = false;
   List<File> _localImages = [];
   final String _imageFolderPath = 'sanatan_pariwar_images';
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -59,17 +60,23 @@ class _GalleryScreenState extends State<GalleryScreen> {
   }
 
   Future<void> _fetchAndDownloadImages() async {
+    setState(() {
+      _isLoading = true;
+    });
+
     try {
       ListResult result = await _storage.ref(_imageFolderPath).listAll();
-      List<String> urls = await Future.wait(result.items.map((ref) => ref.getDownloadURL()).toList());
+      List<Reference> refs = result.items;
 
       final directory = await getApplicationDocumentsDirectory();
-      for (String url in urls) {
-        final response = await http.get(Uri.parse(url));
-        if (response.statusCode == 200) {
-          final fileName = url.split('/').last.split('?').first;
-          final file = File('${directory.path}/$fileName');
-          await file.writeAsBytes(response.bodyBytes);
+      List<Future<void>> downloadFutures = [];
+      List<String> fileNames = [];
+
+      for (var ref in refs) {
+        fileNames.add(ref.name);
+        final localFile = File('${directory.path}/${ref.name}');
+        if (!localFile.existsSync()) {
+          downloadFutures.add(_downloadFile(ref, localFile));
         }
       }
 
@@ -77,14 +84,27 @@ class _GalleryScreenState extends State<GalleryScreen> {
       final localFiles = directory.listSync().whereType<File>().toList();
       for (var file in localFiles) {
         final fileName = file.uri.pathSegments.last;
-        if (!urls.any((url) => url.contains(fileName))) {
+        if (!fileNames.contains(fileName)) {
           file.deleteSync();
         }
       }
 
-      _loadLocalImages();
+      await Future.wait(downloadFutures);
+      await _loadLocalImages();
     } catch (e) {
       print('Error fetching and downloading images: $e');
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _downloadFile(Reference ref, File localFile) async {
+    final downloadUrl = await ref.getDownloadURL();
+    final response = await http.get(Uri.parse(downloadUrl));
+    if (response.statusCode == 200) {
+      await localFile.writeAsBytes(response.bodyBytes);
     }
   }
 
@@ -117,25 +137,33 @@ class _GalleryScreenState extends State<GalleryScreen> {
         elevation: 0,
       ),
       backgroundColor: Colors.orange[100],
-      body: _isOffline
-          ? Center(child: Text('No internet connection'))
-          : RefreshIndicator(
-        onRefresh: _onRefresh,
-        child: GridView.builder(
-          padding: EdgeInsets.all(8.0),
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            mainAxisSpacing: 8,
-            crossAxisSpacing: 8,
+      body: Stack(
+        children: [
+          _isOffline
+              ? Center(child: Text('No internet connection'))
+              : RefreshIndicator(
+            onRefresh: _onRefresh,
+            child: GridView.builder(
+              padding: EdgeInsets.all(8.0),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                mainAxisSpacing: 8,
+                crossAxisSpacing: 8,
+              ),
+              itemCount: _localImages.length,
+              itemBuilder: (context, index) {
+                return GestureDetector(
+                  onTap: () => _viewImage(context, index),
+                  child: Image.file(_localImages[index], fit: BoxFit.cover),
+                );
+              },
+            ),
           ),
-          itemCount: _localImages.length,
-          itemBuilder: (context, index) {
-            return GestureDetector(
-              onTap: () => _viewImage(context, index),
-              child: Image.file(_localImages[index], fit: BoxFit.cover),
-            );
-          },
-        ),
+          if (_isLoading)
+            Center(
+              child: CircularProgressIndicator(),
+            ),
+        ],
       ),
     );
   }
