@@ -24,10 +24,12 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+
+      backgroundColor: Colors.orange[100],
       body: _screens[_currentIndex],
       bottomNavigationBar: CurvedNavigationBar(
         backgroundColor: Colors.transparent,
-        color: Colors.orange[300]!,
+        color: Colors.orange[200]!,
         buttonBackgroundColor: Colors.orange[400],
         height: 55,
         animationDuration: Duration(milliseconds: 200),

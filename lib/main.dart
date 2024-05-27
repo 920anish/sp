@@ -45,11 +45,11 @@ class SanatanPariwarApp extends StatelessWidget {
     return MaterialApp(
       title: 'Sanatan Pariwar',
       theme: ThemeData(
-        primaryColor: Colors.orange[800],
+        primaryColor: Colors.orange[400],
         colorScheme: ColorScheme.fromSwatch(
           primarySwatch: Colors.orange,
         ).copyWith(
-          secondary: Colors.orange[600],
+          secondary: Colors.orange[100],
         ),
         fontFamily: 'Roboto',
       ),
