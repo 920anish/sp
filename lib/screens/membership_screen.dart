@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:country_picker/country_picker.dart';
+import 'package:sanatanpariwar/pdf_utils.dart';
+
 
 class MembershipForm extends StatefulWidget {
   @override
@@ -79,8 +81,14 @@ class _MembershipFormState extends State<MembershipForm> {
                   children: [
                     TextButton(
                       onPressed: _agreedToRules
-                          ? () {
+                          ? ()  {
                         // Implement download functionality
+
+                         generatePdf(
+                          name,
+                          DateTime.now().toString(), // Current date
+                        );
+
                         Navigator.of(context).pop();
                         _resetForm();
                       }

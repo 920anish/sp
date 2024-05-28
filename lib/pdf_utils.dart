@@ -5,26 +5,38 @@ import 'package:path_provider/path_provider.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:permission_handler/permission_handler.dart';
 
+Future<void> requestPermissions() async {
+  if (Platform.isAndroid) {
+    if (Platform.version.contains('33')) {
+      // Android 13 and above
+      if (await Permission.storage.isDenied) {
+        await Permission.storage.request();
+      }
+    } else if (Platform.version.contains('30')) {
+      // Android 11 and above
+      if (await Permission.manageExternalStorage.isDenied) {
+        await Permission.manageExternalStorage.request();
+      }
+    } else {
+      // Android 10 and below
+      if (await Permission.storage.isDenied) {
+        await Permission.storage.request();
+      }
+    }
+  }
+}
+
 void generatePdf(String name, String membershipDate) async {
+  await requestPermissions();
+
   print('Generate PDF button clicked');
 
   try {
-    // Request permissions to write to external storage (Android specific)
-    if (Platform.isAndroid) {
-      var status = await Permission.storage.request();
-      if (status.isDenied) {
-        throw Exception('Permission denied to access storage.');
-      }
-    }
-
     // Get the directory for storing the generated PDF file
     Directory? directory;
     if (Platform.isAndroid) {
       directory = await getExternalStorageDirectory();
-    } else if (Platform.isIOS) {
-      directory = await getApplicationDocumentsDirectory();
     }
-
     if (directory == null) {
       throw Exception('Failed to get the storage directory.');
     }
@@ -50,8 +62,8 @@ void generatePdf(String name, String membershipDate) async {
               pw.Image(pw.MemoryImage(templateData)),
               // Name positioned in the center
               pw.Positioned(
-          top: 400,
-          left: 187,
+                top: 400,
+                left: 187,
                 child: pw.Center(
                   child: pw.Text(
                     '$name',
@@ -60,7 +72,6 @@ void generatePdf(String name, String membershipDate) async {
                 ),
               ),
               // Membership date positioned in the bottom left
-              //yet to fix positioning
               pw.Positioned(
                 left: 50,
                 bottom: 50,

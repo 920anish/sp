@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 import 'dart:io';
@@ -15,36 +14,21 @@ class GalleryScreen extends StatefulWidget {
 
 class _GalleryScreenState extends State<GalleryScreen> {
   final FirebaseStorage _storage = FirebaseStorage.instance;
-  bool _isOffline = false;
   List<File> _localImages = [];
   final String _imageFolderPath = 'sanatan_pariwar_images';
-  bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    _checkConnectivity();
     _checkPermissions();
     _loadLocalImages();
+    _fetchAndDownloadImages();
   }
 
   Future<void> _checkPermissions() async {
     var status = await Permission.storage.status;
     if (!status.isGranted) {
       await Permission.storage.request();
-    }
-  }
-
-  Future<void> _checkConnectivity() async {
-    var connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult == ConnectivityResult.none) {
-      setState(() {
-        _isOffline = true;
-      });
-    } else {
-      setState(() {
-        _isOffline = false;
-      });
     }
   }
 
@@ -61,7 +45,6 @@ class _GalleryScreenState extends State<GalleryScreen> {
 
   Future<void> _fetchAndDownloadImages() async {
     setState(() {
-      _isLoading = true;
     });
 
     try {
@@ -95,7 +78,6 @@ class _GalleryScreenState extends State<GalleryScreen> {
       print('Error fetching and downloading images: $e');
     } finally {
       setState(() {
-        _isLoading = false;
       });
     }
   }
@@ -109,11 +91,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
   }
 
   Future<void> _onRefresh() async {
-    await _checkConnectivity();
-    if (!_isOffline) {
-      await _fetchAndDownloadImages();
-    }
-    setState(() {});
+    await _fetchAndDownloadImages();
   }
 
   void _viewImage(BuildContext context, int index) {
@@ -133,37 +111,33 @@ class _GalleryScreenState extends State<GalleryScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Gallery', style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold)),
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.orange[100],
         elevation: 0,
       ),
       backgroundColor: Colors.orange[100],
-      body: Stack(
-        children: [
-          _isOffline
-              ? Center(child: Text('No internet connection'))
-              : RefreshIndicator(
-            onRefresh: _onRefresh,
-            child: GridView.builder(
-              padding: EdgeInsets.all(8.0),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                mainAxisSpacing: 8,
-                crossAxisSpacing: 8,
-              ),
-              itemCount: _localImages.length,
-              itemBuilder: (context, index) {
-                return GestureDetector(
-                  onTap: () => _viewImage(context, index),
+      body: RefreshIndicator(
+        onRefresh: _onRefresh,
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 16.0),
+          child: GridView.builder(
+            padding: EdgeInsets.all(8.0),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              mainAxisSpacing: 8,
+              crossAxisSpacing: 8,
+            ),
+            itemCount: _localImages.length,
+            itemBuilder: (context, index) {
+              return GestureDetector(
+                onTap: () => _viewImage(context, index),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(16.0),
                   child: Image.file(_localImages[index], fit: BoxFit.cover),
-                );
-              },
-            ),
+                ),
+              );
+            },
           ),
-          if (_isLoading)
-            Center(
-              child: CircularProgressIndicator(),
-            ),
-        ],
+        ),
       ),
     );
   }
