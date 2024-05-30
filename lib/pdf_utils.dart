@@ -2,8 +2,9 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:pdf/widgets.dart' as pw;
 import 'package:permission_handler/permission_handler.dart';
+import 'package:intl/intl.dart';
+import 'package:syncfusion_flutter_pdf/pdf.dart';
 
 Future<void> requestPermissions() async {
   if (Platform.isAndroid) {
@@ -41,54 +42,41 @@ void generatePdf(String name, String membershipDate) async {
       throw Exception('Failed to get the storage directory.');
     }
 
-    String filePath = '${directory.path}/membership_certificate.pdf';
+    // Generate a unique file name using a timestamp
+    String timestamp = DateFormat('yyyyMMddHHmmss').format(DateTime.now());
+    String filePath = '${directory.path}/membership_certificate_$timestamp.pdf';
 
-    // Load the template png from the assets folder
-    final ByteData templateBytes = await rootBundle.load('assets/certificate920.png');
+    // Load the template PDF from the assets folder
+    final ByteData templateBytes = await rootBundle.load('assets/template.pdf');
     final Uint8List templateData = templateBytes.buffer.asUint8List();
 
-    // Use a PDF package (e.g., pdf or pdf_flutter) to modify the template and generate the final PDF
-    final pdfDocument = pw.Document();
+    // Load the template PDF document
+    final PdfDocument templatePdf = PdfDocument(inputBytes: templateData);
 
-    final ttf = await rootBundle.load('assets/Helvetica.ttf');
-    final font = pw.Font.ttf(ttf);
+    // Create a new PDF document to hold the modified content
+    final PdfDocument pdfDocument = PdfDocument();
+    pdfDocument.pageSettings.margins.all = 0.0;
 
-    pdfDocument.addPage(
-      pw.Page(
-        build: (pw.Context context) {
-          return pw.Stack(
-            children: [
-              // Existing template PDF as the background
-              pw.Image(pw.MemoryImage(templateData)),
-              // Name positioned in the center
-              pw.Positioned(
-                top: 400,
-                left: 187,
-                child: pw.Center(
-                  child: pw.Text(
-                    '$name',
-                    style: pw.TextStyle(font: font, fontSize: 20),
-                  ),
-                ),
-              ),
-              // Membership date positioned in the bottom left
-              pw.Positioned(
-                left: 50,
-                bottom: 50,
-                child: pw.Text(
-                  '$membershipDate',
-                  style: pw.TextStyle(font: font, fontSize: 16),
-                ),
-              ),
-            ],
-          );
-        },
-      ),
-    );
 
-    final pdfBytes = await pdfDocument.save();
+    // Import all pages from the template PDF to the new document
+    for (int i = 0; i < templatePdf.pages.count; i++) {
+      pdfDocument.pages.add().graphics.drawPdfTemplate(
+          templatePdf.pages[i].createTemplate(), Offset(0, 0));
+    }
+
+    // Set the font for text drawing
+    final ByteData fontData = await rootBundle.load('assets/Helvetica.ttf');
+    final PdfFont font = PdfTrueTypeFont(fontData.buffer.asUint8List(), 20);
+
+    // Draw name and membership date on the first page
+    final PdfPage firstPage = pdfDocument.pages[0];
+    firstPage.graphics.drawString(name, font,
+        bounds: Rect.fromLTWH(200, 391, 200, 40));
+    firstPage.graphics.drawString(membershipDate, font,
+        bounds: Rect.fromLTWH(67, 639, 200, 20));
 
     // Save the modified PDF to a file
+    final List<int> pdfBytes = await pdfDocument.save();
     final File pdfFile = File(filePath);
     await pdfFile.writeAsBytes(pdfBytes);
 
@@ -99,6 +87,10 @@ void generatePdf(String name, String membershipDate) async {
     if (result.type == ResultType.error) {
       print('Error opening PDF: ${result.message}');
     }
+
+    // Dispose the documents
+    pdfDocument.dispose();
+    templatePdf.dispose();
   } catch (error) {
     print('Error generating PDF: $error');
   }

@@ -8,8 +8,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   print("Handling a background message: ${message.messageId}");
 }
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+Future<void> initializeFirebase() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -17,7 +16,7 @@ void main() async {
   FirebaseMessaging messaging = FirebaseMessaging.instance;
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
-  NotificationSettings settings = await messaging.requestPermission(
+  await messaging.requestPermission(
     alert: true,
     announcement: false,
     badge: true,
@@ -35,7 +34,11 @@ void main() async {
       print('Message also contained a notification: ${message.notification}');
     }
   });
+}
 
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await initializeFirebase();
   runApp(SanatanPariwarApp());
 }
 

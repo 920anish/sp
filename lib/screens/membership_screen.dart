@@ -103,6 +103,7 @@ class _MembershipFormState extends State<MembershipForm> {
                       onPressed: () {
                         Navigator.of(context).pop();
                         _resetForm(); // Reset the form
+
                       },
                       child: Text('OK'),
                       style: TextButton.styleFrom(
@@ -133,6 +134,7 @@ class _MembershipFormState extends State<MembershipForm> {
       _selectedCountry = null;
       _selectedGender = null;
       _selectedMaritalStatus = null;
+      _agreedToRules = false;
     });
   }
 
