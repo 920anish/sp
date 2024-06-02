@@ -10,53 +10,33 @@ dependencies:
   flutter:
     sdk: flutter
 
-  cupertino_icons: ^1.0.2
-
-
-  # Firebase dependencies
   firebase_core: ^2.13.0
-  firebase_auth: ^4.6.1
 
 
-  # UI
-  flutter_bloc: ^8.0.1
   http: ^1.1.2
   shared_preferences: ^2.0.10
 
-  # Icons
+
   flutter_launcher_icons: ^0.13.1
 
-  # Curved navigation bar
+
   curved_navigation_bar: ^1.0.3
   url_launcher: ^6.1.11
   font_awesome_flutter: ^10.4.0
   cached_network_image: ^3.2.3
   photo_view: ^0.15.0
-  flutter_spinkit: ^5.2.0
   cloud_firestore: ^4.7.1
   firebase_messaging: ^14.6.1
-  firebase_analytics: ^10.4.1
   country_picker: ^2.0.20
   intl: ^0.19.0
-  flutter_local_notifications: ^17.1.2
-  flutter_stripe: ^10.1.1
   pay: ^2.0.0
-  pdf: ^3.10.4
   permission_handler: ^11.1.0
-  open_file: ^3.3.1
-
-
-
-
-
-
-
   path_provider: any
   firebase_storage: ^11.7.6
-  connectivity_plus: ^6.0.3
-  flutter_cache_manager: ^3.3.2
-  cached_firestorage: ^0.2.0
   syncfusion_flutter_pdf: ^25.2.5
+  open_file_plus: ^3.4.1+1
+
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -71,7 +51,6 @@ flutter:
 
   assets:
     - assets/
-    - assets/logo.png
     # Add your additional assets (images, fonts, etc.) here
 
   # Add any custom configurations, if required

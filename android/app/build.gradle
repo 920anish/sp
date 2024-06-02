@@ -31,10 +31,11 @@ if (flutterVersionName == null) {
 android {
     namespace "com.sanatan.pariwar.sanatanpariwar"
     compileSdkVersion 34
-    ndkVersion flutter.ndkVersion
+    ndkVersion "26.3.11579264"
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+
     }
 
     kotlinOptions {
@@ -78,12 +79,11 @@ flutter {
 }
 
 dependencies {
-    implementation platform('com.google.firebase:firebase-bom:33.0.0')
+    implementation platform('com.google.firebase:firebase-bom:33.1.0')
     implementation 'com.google.firebase:firebase-messaging'
     implementation 'com.google.firebase:firebase-analytics-ktx'
     implementation 'com.google.firebase:firebase-inappmessaging-display-ktx'
     implementation 'com.google.android.gms:play-services-wallet:19.4.0'
     implementation 'com.android.support:multidex:2.0.1'
-
 }
 
